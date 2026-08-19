@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from typing import Any, Dict, Optional
 from fastapi import FastAPI, BackgroundTasks, Header, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.config import get_settings
 from app.services.processor import ensure_model
@@ -29,10 +29,12 @@ class StorageRecord(BaseModel):
 class SupabaseWebhookPaylod(BaseModel):
     type: str
     table: str
-    schema: str
+    schema_name: str = Field(alias="schema")
     record: StorageRecord
-    
-@app.get("/heartbeat")
+
+@app.get("/", status_code=status.HTTP_200_OK)
+@app.head("/", status_code=status.HTTP_200_OK)
+@app.get("/heartbeat", status_code=status.HTTP_200_OK)
 async def heartbeat():
     return {"status": "ok"}
 
